@@ -13,7 +13,7 @@ module Main exposing (..)
 import Html
 import Html.Attributes exposing (class, href)
 
-
+view : Html.Html
 view =
     Html.div []
         [ Html.h1 [ class "hello" ] [ Html.text "new!" ]
