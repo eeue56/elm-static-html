@@ -1,9 +1,10 @@
+#!/usr/bin/env node
+
 var fs = require('fs');
 var os = require('os');
 var path = require("path");
 var compile = require('node-elm-compiler').compile;
 var yargs = require('yargs');
-
 
 var argv = yargs
     .usage('Usage: -f $elm-filename -o $output')
