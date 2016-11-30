@@ -1,0 +1,34 @@
+{
+  "name": "elm-static-html",
+  "version": "1.0.0",
+  "description": "Turn your Elm app into a static HTML site",
+  "main": "index.js",
+  "bin": {
+    "elm-static-html": "index.js"
+  },
+  "scripts": {
+    "test": "./run_tests.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eeue56/elm-static-html.git"
+  },
+  "keywords": [
+    "elm",
+    "static",
+    "html",
+    "server",
+    "side",
+    "render"
+  ],
+  "author": "eeue56",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/eeue56/elm-static-html/issues"
+  },
+  "homepage": "https://github.com/eeue56/elm-static-html#readme",
+  "dependencies": {
+    "node-elm-compiler": "^4.2.0",
+    "yargs": "^6.4.0"
+  }
+}

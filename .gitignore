@@ -1,3 +1,7 @@
+elm-stuff
+node_modules
+.elm-static-html
+
 # Logs
 logs
 *.log
