@@ -8,16 +8,25 @@ var yargs = require('yargs');
 
 var argv = yargs
     .usage('Usage: -f $elm-filename -o $output')
-    .demand(['f', 'o'])
+    .demand(['filename'])
     .alias('f', 'filename')
+    .describe('f', 'Provide an Elm file to compile to HTML')
+
     .alias('o', 'output')
+    .describe('o', 'Write to a particular file. Defaults to STDOUT')
+
     .alias('v', 'verbose')
+    .describe('v', 'Be more chatty')
+
     .argv;
 
 var renderDirName = '.elm-static-html';
 var isVerbose = (typeof argv.v !== "undefined" && argv.v);
+var outputToStdOut = (typeof argv.o === "undefined");
 
 if (isVerbose) console.log('Loading file.. ', argv.filename);
+if (isVerbose && outputToStdOut) console.log('Outputting to stdout..');
+
 
 // load the file and try to read the module name by spliting
 var fileContents = fs.readFileSync(argv.filename, 'utf-8');
@@ -141,8 +150,15 @@ compileProcess.on('exit',
         var elmApp = Elm.PrivateMain.worker();
 
         elmApp.ports.htmlOut.subscribe(function(html){
-            if (isVerbose) console.log('Saving to', argv.output);
-            fs.writeFileSync(argv.output, html + "\n");
+
+            if (outputToStdOut){
+                if (isVerbose) console.log('Generated the following string..');
+                console.log(html + "\n");
+            } else {
+                if (isVerbose) console.log('Saving to', argv.output);
+                fs.writeFileSync(argv.output, html);
+            }
+
             if (isVerbose) console.log('Done!');
         });
     }
