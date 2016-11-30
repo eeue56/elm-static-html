@@ -38,6 +38,22 @@ which will produce
 ```
 
 
+## Flags
+
+`elm-static-html -f Main.elm` will print the output to stdout by default
+You can create an initial config file through `elm-static-html --init`, though it's not needed to work.
+
+You can use a config to generate files through `elm-static-html -c elm-static-html.json`.
+The config file looks like this:
+
+```js
+{
+    "files":
+        "<ElmFile.elm>": "<OutputFile.html>"
+}
+```
+
+
 ## Notes
 
 An .elm-static-html folder is created in order to generate the correct HTML and JS needed. You can delete it if you want, but it'll make builds a little slower.
