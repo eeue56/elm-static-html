@@ -11,14 +11,15 @@ var argv = yargs
     .demand(['f', 'o'])
     .alias('f', 'filename')
     .alias('o', 'output')
+    .alias('v', 'verbose')
     .argv;
 
 var renderDirName = '.elm-static-html';
+var isVerbose = (typeof argv.v !== "undefined" && argv.v);
 
+if (isVerbose) console.log('Loading file.. ', argv.filename);
 
-
-console.log('Loading file.. ', argv.filename);
-
+// load the file and try to read the module name by spliting
 var fileContents = fs.readFileSync(argv.filename, 'utf-8');
 var moduleName = fileContents.split('\n')[0].split(' ')[1].trim();
 
@@ -33,7 +34,8 @@ if (moduleName.length === 0){
 
 var elmPackage = null;
 
-
+// fix an elm package file so that it will work with our project
+// and install our deps
 var fixElmPackage = function(elmPackage){
     elmPackage['native-modules'] = true;
     var sources = elmPackage['source-directories'].map(function(dir){
@@ -47,6 +49,7 @@ var fixElmPackage = function(elmPackage){
     return elmPackage;
 };
 
+// try to load elm-package.json
 try {
     elmPackage = require(path.join(process.cwd(), 'elm-package.json'));
 } catch (e){
@@ -55,15 +58,19 @@ try {
     return -1;
 }
 
+// grab the user/project string from the elm-package file
 var projectName = elmPackage['repository'].replace('https://github.com/', '').replace('.git', '').replace('/', '$');
 
+// literally the only reason why this has to be an npm package
 var nativeString = `
 var _${projectName}$Native_Jsonify = {
     stringify: function(thing) { return JSON.stringify(thing); }
 };`;
 
 
-var file = `
+// this is our render's file contents
+// basically just boilerplate
+var rendererFileContents = `
 port module PrivateMain exposing (..)
 
 import Platform
@@ -113,9 +120,10 @@ var privateMainPath = path.join(dirPath, 'PrivateMain.elm');
 var nativePath = path.join(dirPath, 'Native/Jsonify.js');
 
 fs.writeFileSync(elmPackagePath, JSON.stringify(elmPackage));
-fs.writeFileSync(privateMainPath, file);
+fs.writeFileSync(privateMainPath, rendererFileContents);
 fs.writeFileSync(nativePath, nativeString)
-console.log('wrote template files to..', renderDirName);
+
+if (isVerbose) console.log('wrote template files to..', renderDirName);
 
 var options = {
     yes: true,
@@ -133,9 +141,9 @@ compileProcess.on('exit',
         var elmApp = Elm.PrivateMain.worker();
 
         elmApp.ports.htmlOut.subscribe(function(html){
-            console.log('Saving to', argv.output);
-            fs.writeFileSync(argv.output, html);
-            console.log('Done!');
+            if (isVerbose) console.log('Saving to', argv.output);
+            fs.writeFileSync(argv.output, html + "\n");
+            if (isVerbose) console.log('Done!');
         });
     }
 );
