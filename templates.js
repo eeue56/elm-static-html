@@ -1,7 +1,9 @@
 // literally the only reason why this has to be an npm package
 var generateNativeModuleString = function(projectName){
+    var fixedProjectName = projectName.replace('-', '_');
+
     var nativeString = `
-var _${projectName}$Native_Jsonify = {
+var _${fixedProjectName}$Native_Jsonify = {
     stringify: function(thing) { return JSON.stringify(thing); }
 };`;
 
