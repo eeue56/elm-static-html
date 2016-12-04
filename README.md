@@ -48,8 +48,9 @@ The config file looks like this:
 
 ```js
 {
-    "files":
+    "files": {
         "<ElmFile.elm>": "<OutputFile.html>"
+    }
 }
 ```
 
