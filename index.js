@@ -8,6 +8,8 @@ const compile = require('node-elm-compiler').compile;
 const yargs = require('yargs');
 
 const STDOUT_KEY = '::stdout';
+const defaultViewFunction = "view";
+var renderDirName = '.elm-static-html';
 
 var argv = yargs
     .usage('Usage: <command> [options]')
@@ -27,9 +29,29 @@ var argv = yargs
 
     .argv;
 
+var standardizedConfig = function(config){
+    if (typeof config === "string"){
+        return {
+            "output": config,
+            "viewFunction": defaultViewFunction
+        };
+    }
+
+    var keys = Object.keys(config);
+
+    if (keys.indexOf("output") === -1 || keys.indexOf('viewFunction') === -1){
+        console.error('Malformed config!', config);
+        console.log('It should have an output field and a viewFunction field!');
+        return null;
+    }
+
+    return config;
+};
 
 const isVerbose = (typeof argv.v !== "undefined" && argv.v);
 const isInitConfig = (typeof argv.initConfig !== "undefined" && argv.initConfig);
+const outputToStdOut = (typeof argv.o === "undefined");
+const isUsingConfig = (typeof argv.c !== "undefined");
 
 if (isInitConfig){
     if (isVerbose) console.log('Initializing elm-static-html.json..');
@@ -42,9 +64,6 @@ if (isInitConfig){
     return 0;
 }
 
-var renderDirName = '.elm-static-html';
-const outputToStdOut = (typeof argv.o === "undefined");
-const isUsingConfig = (typeof argv.c !== "undefined");
 
 var config = null;
 
@@ -52,6 +71,12 @@ if (isUsingConfig){
     if (isVerbose) console.log('Using the config file', argv.config);
     try {
         config = require(path.join(process.cwd(), argv.config));
+
+        Object.keys(config['files']).map(function(key){
+            var standardized = standardizedConfig(config['files'][key]);
+            config['files'][key] = standardized;
+        });
+
     } catch (e) {
         console.error('Failed to load config file! You can make an initial config through --init');
         console.error(e);
@@ -77,7 +102,10 @@ if (isUsingConfig){
         files : {}
     };
 
-    config.files[argv.filename] = outputName;
+    config.files[argv.filename] = {
+        'output': outputName,
+        'viewFunction': defaultViewFunction
+    };
 }
 
 
@@ -96,9 +124,10 @@ var getModuleNames = function(config) {
             return null;
         }
 
-        var output = config.files[filename];
+        var viewFunction = config.files[filename].viewFunction
+        var output = config.files[filename].output;
 
-        return { filename: filename, moduleName: moduleName, output: output, func: "view" };
+        return { filename: filename, moduleName: moduleName, output: output, func: viewFunction };
     }).filter(function(moduleName){
         return moduleName != null;
     });
@@ -119,7 +148,7 @@ var fixElmPackage = function(workingDir, elmPackage){
     sources.push('.');
 
     elmPackage['source-directories'] = sources;
-    elmPackage['dependencies']["eeue56/elm-html-in-elm"] = "1.0.1 <= v < 2.0.0";
+    elmPackage['dependencies']["eeue56/elm-html-in-elm"] = "2.0.0 <= v < 2.1.0";
 
     return elmPackage;
 };

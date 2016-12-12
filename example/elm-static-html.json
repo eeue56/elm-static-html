@@ -1,5 +1,8 @@
 {
     "files": {
-        "Main.elm": "index.html"
+        "Main.elm": {
+            "output":"index.html",
+            "viewFunction":"view"
+        }
     }
 }

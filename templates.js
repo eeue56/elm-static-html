@@ -35,7 +35,7 @@ port module PrivateMain exposing (..)
 import Platform
 import Html exposing (Html)
 import ElmHtml.InternalTypes exposing (decodeElmHtml)
-import ElmHtml.ToString exposing (nodeTypeToString)
+import ElmHtml.ToString exposing (nodeToStringWithOptions, defaultFormatOptions)
 import Json.Decode as Json
 import Native.Jsonify
 
@@ -45,11 +45,13 @@ ${imports}
 asJsonString : Html msg -> String
 asJsonString = Native.Jsonify.stringify
 
+options = { defaultFormatOptions | newLines = True, indent = 4 }
+
 decode : (String, Html msg) -> ( String, String )
 decode (output, view) =
     case Json.decodeString decodeElmHtml (asJsonString view) of
         Err str -> (output, str)
-        Ok str -> (output, nodeTypeToString str)
+        Ok str -> (output, nodeToStringWithOptions options str)
 
 main = Platform.program
     { init =
@@ -68,7 +70,12 @@ port htmlOut : List (String, String) -> Cmd msg
 
 var generateConfig = function() {
     var config = {
-        files: {}
+        files: {
+            "Main.elm": {
+                output: "index.html",
+                viewFunction: "view"
+            }
+        }
     };
     return JSON.stringify(config, undefined, 4);
 };
