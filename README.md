@@ -10,7 +10,7 @@ Your modules must look like this:
 ```elm
 module Main exposing (..)
 
-import Html 
+import Html
 import Html.Attributes exposing (class, href)
 
 view : Html.Html msg
