@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/eeue56/elm-static-html#readme",
   "dependencies": {
+    "glob": "^7.1.1",
     "node-elm-compiler": "^4.2.0",
     "yargs": "^6.4.0"
   }
