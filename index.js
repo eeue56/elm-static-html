@@ -13,6 +13,9 @@ var renderDirName = '.elm-static-html';
 
 var argv = yargs
     .usage('Usage: <command> [options]')
+    .version()
+    .help('h')
+    .alias('h', 'help')
     .alias('f', 'filename')
     .describe('f', 'Provide an Elm file to compile to HTML')
 
@@ -21,6 +24,7 @@ var argv = yargs
 
     .alias('v', 'verbose')
     .describe('v', 'Be more chatty')
+    .default('v', false)
 
     .alias('c', 'config')
     .describe('c', 'Provide a json file for use as config')
@@ -48,7 +52,7 @@ var standardizedConfig = function(config){
     return config;
 };
 
-const isVerbose = (typeof argv.v !== "undefined" && argv.v);
+const isVerbose = argv.verbose;
 const isInitConfig = (typeof argv.initConfig !== "undefined" && argv.initConfig);
 const outputToStdOut = (typeof argv.o === "undefined");
 const isUsingConfig = (typeof argv.c !== "undefined");
@@ -84,7 +88,7 @@ if (isUsingConfig){
     }
 } else {
     if (typeof argv.filename === "undefined") {
-        console.error('No filename provided! Please provide a filename via -f');
+        yargs.showHelp();
         return -1;
     }
 
