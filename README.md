@@ -41,15 +41,23 @@ which will produce
 ## Flags
 
 `elm-static-html -f Main.elm` will print the output to stdout by default
-You can create an initial config file through `elm-static-html --init`, though it's not needed to work.
+You can create an initial config file through `elm-static-html --init-config`, though it's not needed to work.
 
-You can use a config to generate files through `elm-static-html -c elm-static-html.json`.
+You can use the config file to generate multiple files through `elm-static-html -c elm-static-html.json`.
 The config file looks like this:
 
 ```js
 {
     "files": {
-        "<ElmFile.elm>": "<OutputFile.html>"
+        "<ElmFile.elm>": {
+            "output": "<OutputFile.html>",
+            "viewFunction": "view"
+        },
+        "<AnotherElmFile.elm": {
+            "output": "<AnotherOutputFile.html>",
+            "viewFunction": "someViewFunc"
+        }
+        /* ... */
     }
 }
 ```
