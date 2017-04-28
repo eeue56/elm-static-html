@@ -152,7 +152,7 @@ var fixElmPackage = function(workingDir, elmPackage){
     sources.push('.');
 
     elmPackage['source-directories'] = sources;
-    elmPackage['dependencies']["eeue56/elm-html-in-elm"] = "2.0.0 <= v < 2.1.0";
+    elmPackage['dependencies']["eeue56/elm-html-in-elm"] = "2.0.0 <= v < 3.0.0";
 
     return elmPackage;
 };
