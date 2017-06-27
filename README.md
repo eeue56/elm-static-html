@@ -62,6 +62,21 @@ The config file looks like this:
 }
 ```
 
+To generate multiple output files from a single elm file, supply an array of outputFile/viewFunction pairs:
+
+```js
+{
+	"files": {
+		"<ElmFile.elm>": [{
+			"output": "<OutputFile.html>",
+			"viewFunction": "view"
+		}, {
+			"output": "<AnotherOutputFile.html>",
+			"viewFunction": "anotherView"
+		}]
+	}
+}
+```
 
 ## Notes
 
