@@ -35,19 +35,26 @@ var argv = yargs
 
 var standardizedConfig = function(config){
     if (typeof config === "string"){
-        return {
+        return [{
             "output": config,
             "viewFunction": defaultViewFunction
-        };
+        }];
     }
 
-    var keys = Object.keys(config);
-
-    if (keys.indexOf("output") === -1 || keys.indexOf('viewFunction') === -1){
-        console.error('Malformed config!', config);
-        console.log('It should have an output field and a viewFunction field!');
-        return null;
+    // make 1-element array if the value is an array already
+    if (config.constructor !== Array){
+        config = [config];
     }
+
+    // for every output/viewFunction pair check that they are valid
+    config.map(function(configItem){
+        var keys = Object.keys(configItem);
+        if (keys.indexOf("output") === -1 || keys.indexOf('viewFunction') === -1){
+            console.error('Malformed config!', configItem);
+            console.log('It should have an output field and a viewFunction field!');
+            return null;
+        }
+    });
 
     return config;
 };
@@ -76,9 +83,9 @@ if (isUsingConfig){
     try {
         config = require(path.join(process.cwd(), argv.config));
 
-        Object.keys(config['files']).map(function(key){
-            var standardized = standardizedConfig(config['files'][key]);
-            config['files'][key] = standardized;
+        Object.keys(config['files']).map(function(filename){
+            var standardized = standardizedConfig(config['files'][filename]);
+            config['files'][filename] = standardized;
         });
 
     } catch (e) {
@@ -106,11 +113,12 @@ if (isUsingConfig){
         files : {}
     };
 
-    config.files[argv.filename] = {
+    config.files[argv.filename] = [{
         'output': outputName,
         'viewFunction': defaultViewFunction
-    };
+    }];
 }
+
 
 
 var getModuleNames = function(config) {
@@ -128,10 +136,7 @@ var getModuleNames = function(config) {
             return null;
         }
 
-        var viewFunction = config.files[filename].viewFunction
-        var output = config.files[filename].output;
-
-        return { filename: filename, moduleName: moduleName, output: output, func: viewFunction };
+        return { filename: filename, moduleName: moduleName, outputsAndFuncs: config.files[filename]};
     }).filter(function(moduleName){
         return moduleName != null;
     });
