@@ -18,9 +18,12 @@ var importLines = function(moduleNames){
 };
 
 var viewFunctions = function(moduleNames){
-    return moduleNames.map(function(moduleConfig){
-        return `("${moduleConfig.output}", ${moduleConfig.moduleName}.${moduleConfig.func})`;
-    });
+    var pairs = moduleNames.map(function(moduleConfig){
+            return moduleConfig.outputsAndFuncs.map(function(outputConfig){
+                return `("${outputConfig.output}", ${moduleConfig.moduleName}.${outputConfig.viewFunction})`;
+            });
+        });
+    return [].concat.apply([], pairs);
 };
 
 // this is our render's file contents
